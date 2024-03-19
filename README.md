@@ -1,4 +1,4 @@
-# exam-timer
+# CS 1332 Exam Timer
 
 ## Project setup
 ```
