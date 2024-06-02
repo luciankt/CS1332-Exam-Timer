@@ -14,6 +14,7 @@ export default {
   },
 };
 </script>
+
 <style scoped>
 .pane {
   width: 45%;
