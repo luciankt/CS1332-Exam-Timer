@@ -6,4 +6,83 @@
     width: 47.75%;
     height: 96%;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.settingsButton {
+    color: white;
+    font-size: 3em;
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    cursor: pointer;
+}
+
+.currentTime {
+    text-align: center;
+    font-size: 2em;
+    margin: 15px;
+    margin-top: 17%;
+}
+
+.currentTimeLabel {
+    color: gainsboro;
+    /* color: white; */
+}
+
+.currentTimeValue {
+    color: white;
+    font-weight: bold;
+}
+
+.timer {
+    position: relative;
+    width: 640px;
+    height: 640px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 3%;
+}
+
+.timer svg {
+    transform: rotate(-90deg);
+    width: 100%;
+    height: 100%;
+}
+
+.timerCircle {
+    stroke: #9FA5CE;
+    stroke-width: 25;
+    fill: transparent;
+    stroke-dasharray: 1256;
+    stroke-dashoffset: 1256;
+    transition: stroke-dashoffset 1s linear;
+}
+
+.backgroundCircle {
+    stroke: white;
+    stroke-width: 25;
+    fill: transparent;
+}
+
+.timerText {
+    position: absolute;
+    top: 58%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 6em;
+    color: white;
+}
+
+.timeLeftText {
+    position: absolute;
+    top: 42%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 4em;
+    color: white;
+    font-weight: bold;
 }

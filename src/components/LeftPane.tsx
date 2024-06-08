@@ -1,16 +1,24 @@
 import React from 'react';
 import './css/LeftPane.css';
+import '@fortawesome/fontawesome-free/css/all.min.css';
+import Timer from './Timer';
+import CurrentTime from './CurrentTime';
 
-interface LeftPaneProps {
-    // Define the props for the LeftPane component here
-}
+// Props
+interface LeftPaneProps {}
 
-const LeftPane: React.FC<LeftPaneProps> = () => {
-    // Implement the component logic here
+// Variables
+let timerDuration = 60*50;
 
+// LeftPane component
+const LeftPane: React.FC<LeftPaneProps> = (props) => {
     return (
         <div className='leftPane'>
-            {/* Add your JSX content here */}
+            <div className='settingsButton'>
+                <i className='fas fa-cog'></i>
+            </div>
+            <CurrentTime />
+            <Timer timerDuration={timerDuration}/>
         </div>
     );
 };
