@@ -49,7 +49,6 @@ const LeftPane: React.FC<LeftPaneProps> = (props) => {
     const reachZero = () => {
         activateTimer(false);
         setTimeout(resetTimer, 5000);
-        console.log('reached zero')
     }
 
     const resetTimer = () => {
@@ -91,7 +90,7 @@ const LeftPane: React.FC<LeftPaneProps> = (props) => {
 
             // Reset clock if duration is negative
             if (duration < 0) {
-                reachZero()            
+                reachZero()
             }
         }, 1000);
     
