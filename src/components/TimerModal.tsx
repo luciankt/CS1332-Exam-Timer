@@ -85,6 +85,7 @@ const TimerModal: React.FC<TimerModalProps> = ({ isOpen, onClose, onSave, defaul
                     <div className="modal-content" onClick={handleModalClick}>
                         <h2>Time Settings</h2>
                         <hr />
+                        
                         <div className="input-group">
                             <label htmlFor="startTime">Start:</label>
                             <input
@@ -96,6 +97,7 @@ const TimerModal: React.FC<TimerModalProps> = ({ isOpen, onClose, onSave, defaul
                                 className={`${invalidTimes() ? 'red' : 'gray'}`}
                             />
                         </div>
+
                         <div className="input-group">
                             <label htmlFor="endTime">End:</label>
                             <input
@@ -107,6 +109,7 @@ const TimerModal: React.FC<TimerModalProps> = ({ isOpen, onClose, onSave, defaul
                                 className={`${invalidTimes() ? 'red' : 'gray'}`}
                             />
                         </div>
+
                         <div className="input-group">
                             <label htmlFor="endTime">Duration:</label>
                             <input
@@ -118,6 +121,19 @@ const TimerModal: React.FC<TimerModalProps> = ({ isOpen, onClose, onSave, defaul
                                 className={`${invalidDuration() ? 'red' : 'gray'}`}
                             />
                         </div>
+
+                        <div>
+                            {invalidTimes() && (
+                                <p className="error-text">Start and end cannot both be in the past.</p>
+                            )}
+                            {!invalidTimes() && invalidDuration() && (
+                                <p className="error-text">Start and end cannot be at the same time.</p>
+                            )}
+                            {!invalidTimes() && !invalidDuration() && (
+                                <p className="error-text invisible">.</p>
+                            )}
+                        </div>
+
                         <div className="buttons">
                             <button className="cancelButton" onClick={onClose}>Cancel</button>
                             <button 

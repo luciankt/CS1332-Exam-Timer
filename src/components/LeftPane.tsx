@@ -4,6 +4,7 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 import Timer from './Timer';
 import CurrentTime from './CurrentTime';
 import TimerModal from './TimerModal';
+import StartEndDisplay from './StartEndDisplay';
 
 // Props
 interface LeftPaneProps {}
@@ -25,21 +26,20 @@ const LeftPane: React.FC<LeftPaneProps> = (props) => {
         return () => clearInterval(interval);
     }, []);
 
-    // Function to calculate the next full hour
-    const calculateNextFullHour = (offset: number) => {
+    // Function to calculate the next half hour
+    const calculateNextHalfHour = (offset: number) => {
         const now = new Date();
-        const nextHour = new Date(now.getTime() + 60 * 60 * 1000);
-        const nextFullHour = new Date(nextHour.getFullYear(), nextHour.getMonth(), nextHour.getDate(), nextHour.getHours(), 0, offset);
-        // const formattedTime = nextFullHour.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
-        return nextFullHour;
+        const nextHalfHour = new Date(Math.ceil(now.getTime() / (1000 * 60 * 30)) * (1000 * 60 * 30));
+        nextHalfHour.setSeconds(offset);
+        return nextHalfHour;
     }
 
     // Variables
     const defaultDuration = 3000; // Default duration of the timer in seconds
-    const [startTime, setStartTime] = useState<Date>(calculateNextFullHour(0)); // The start time
-    const [endTime, setEndTime] = useState<Date>(calculateNextFullHour(defaultDuration)); // The end time
+    const [startTime, setStartTime] = useState<Date>(calculateNextHalfHour(0)); // The start time
+    const [endTime, setEndTime] = useState<Date>(calculateNextHalfHour(defaultDuration)); // The end time
     const [duration, setTotalTime] = useState<number>(defaultDuration); // The total time from startTime to endTime
-    const [timeLeft, setDuration] = useState<number>(defaultDuration); // The time left from now
+    const [timeLeft, setTimeLeft] = useState<number>(defaultDuration); // The time left from now
     const [timerIsActive, activateTimer] = useState<boolean>(false); // Whether the timer is active
     const [timerModalIsOpen, setTimerModalIsOpen] = useState(false); // Whether the settings modal is open
     const [currentTime, setCurrentTime] = React.useState(calculateCurrentTime());
@@ -65,7 +65,7 @@ const LeftPane: React.FC<LeftPaneProps> = (props) => {
         // Update the times
         setStartTime(newStartTime);
         setEndTime(newEndTime);
-        setDuration(time);
+        setTimeLeft(time);
         setTotalTime(time);
     };
 
@@ -76,7 +76,7 @@ const LeftPane: React.FC<LeftPaneProps> = (props) => {
 
     // Reset the timer to default values
     const resetTimer = () => {
-        setNewTimes(calculateNextFullHour(0), calculateNextFullHour(defaultDuration));
+        setNewTimes(calculateNextHalfHour(0), calculateNextHalfHour(defaultDuration));
     }
 
     // Format Date object to HH:MM:SS in 24 hour time
@@ -96,23 +96,24 @@ const LeftPane: React.FC<LeftPaneProps> = (props) => {
         return time;
     }
 
+    // Convert seconds to 12 hour time with AM/PM
     const secondsTo12HR = (seconds: number) => {
         const hours = Math.floor(seconds / 3600) % 12 || 12;
         const minutes = Math.floor((seconds % 3600) / 60);
         const remainingSeconds = Math.floor(seconds % 60);
         const period = hours >= 12 ? 'PM' : 'AM';
-        const time = `${hours.toString()}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')} ${period}`;
+        let time = `${hours.toString()}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')} ${period}`;
         return time;
     }
 
     useEffect(() => {
         const now = new Date();
-        const currentDuration = (endTime.getTime() - now.getTime()) / 1000;
+        const currentDuration = (endTime.getTime() - now.getTime() + 1) / 1000;
 
         // Check if the timer should be active and update the time left
         if (now >= startTime) {
             activateTimer(true);
-            setDuration(currentDuration);
+            setTimeLeft(currentDuration);
         }
 
         // Check if the timer should be inactive
@@ -140,6 +141,7 @@ const LeftPane: React.FC<LeftPaneProps> = (props) => {
             {timeLeft <= 0 && (
                 <h1 style={{ color: 'pink' }}>Time is up!</h1>
             )}
+            <StartEndDisplay startTime={startTime} endTime={endTime} formatDatetime={formatDatetime} />
         </div>
     );
 };

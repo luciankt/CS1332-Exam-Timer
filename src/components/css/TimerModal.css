@@ -87,7 +87,7 @@ button {
 }
 
 .buttons {
-    margin-top: 15%;
+    margin-top: 6%;
     display: flex;
     justify-content: space-between;
 }
@@ -113,4 +113,15 @@ button {
 
 .cancelButton:hover {
     background: #717aa8; /* Darken the color */
+}
+
+.error-text {
+    color: red;
+    font-size: 1.2em;
+    text-align: center;
+    margin-top: 5%;
+}
+
+.invisible {
+    color: transparent;
 }
