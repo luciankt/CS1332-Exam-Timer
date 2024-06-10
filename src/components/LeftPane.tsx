@@ -8,28 +8,43 @@ import TimerModal from './TimerModal';
 // Props
 interface LeftPaneProps {}
 
-
 // LeftPane component
 const LeftPane: React.FC<LeftPaneProps> = (props) => {
+
+    // Calculate current time in seconds
+    const calculateCurrentTime = () => {
+        const now = new Date();
+        return now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+    }
+
+    // Recalculate current time every second
+    React.useEffect(() => {
+        const interval = setInterval(() => {
+        setCurrentTime(calculateCurrentTime());
+        }, 1000);
+        return () => clearInterval(interval);
+    }, []);
 
     // Function to calculate the next full hour
     const calculateNextFullHour = (offset: number) => {
         const now = new Date();
         const nextHour = new Date(now.getTime() + 60 * 60 * 1000);
         const nextFullHour = new Date(nextHour.getFullYear(), nextHour.getMonth(), nextHour.getDate(), nextHour.getHours(), 0, offset);
-        const formattedTime = nextFullHour.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
-        return formattedTime;
+        // const formattedTime = nextFullHour.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+        return nextFullHour;
     }
 
     // Variables
-    const [duration, setDuration] = useState<number>(3000);
-    const [startTime, setStartTime] = useState<string>(calculateNextFullHour(0));
-    const [endTime, setEndTime] = useState<string>(calculateNextFullHour(duration));
-    const [timerIsActive, activateTimer] = useState<boolean>(false);
-    const [totalTime, setTotalTime] = useState<number>(3000);
+    const defaultDuration = 3000; // Default duration of the timer in seconds
+    const [startTime, setStartTime] = useState<Date>(calculateNextFullHour(0)); // The start time
+    const [endTime, setEndTime] = useState<Date>(calculateNextFullHour(defaultDuration)); // The end time
+    const [duration, setTotalTime] = useState<number>(defaultDuration); // The total time from startTime to endTime
+    const [timeLeft, setDuration] = useState<number>(defaultDuration); // The time left from now
+    const [timerIsActive, activateTimer] = useState<boolean>(false); // Whether the timer is active
+    const [timerModalIsOpen, setTimerModalIsOpen] = useState(false); // Whether the settings modal is open
+    const [currentTime, setCurrentTime] = React.useState(calculateCurrentTime());
 
     // Settings modal
-    const [timerModalIsOpen, setTimerModalIsOpen] = useState(false);
     const openTimerModal = () => setTimerModalIsOpen(true);
     const closeTimerModal = () => {
         if (timerModalIsOpen) {
@@ -38,75 +53,93 @@ const LeftPane: React.FC<LeftPaneProps> = (props) => {
     };
 
     // Set the new times when updated in settings modal
-    const setNewTimes = (newStartTime: string, newEndTime: string) => {
-        activateTimer(false);
+    const setNewTimes = (newStartTime: Date, newEndTime: Date) => {
+        let time = Math.floor((newEndTime.getTime() - newStartTime.getTime()) / 1000);
+
+        // Add a day to the end time if the new end time is before the new start time
+        if (time < 0) {
+            newEndTime.setDate(newEndTime.getDate() + 1);
+            time = Math.floor((newEndTime.getTime() - newStartTime.getTime()) / 1000);
+        }
+
+        // Update the times
         setStartTime(newStartTime);
         setEndTime(newEndTime);
-        setDuration((new Date(`1970-01-01T${newEndTime}`).getTime() - new Date(`1970-01-01T${newStartTime}`).getTime()) / 1000);
-        setTotalTime((new Date(`1970-01-01T${newEndTime}`).getTime() - new Date(`1970-01-01T${newStartTime}`).getTime()) / 1000);
+        setDuration(time);
+        setTotalTime(time);
     };
 
     const reachZero = () => {
         activateTimer(false);
-        setTimeout(resetTimer, 5000);
+        setTimeout(resetTimer, 2500);
     }
 
+    // Reset the timer to default values
     const resetTimer = () => {
-        setDuration(3000);
-        setStartTime(calculateNextFullHour(0));
-        setEndTime(calculateNextFullHour(3000));
-        activateTimer(false);
-        setTotalTime(3000);
+        setNewTimes(calculateNextFullHour(0), calculateNextFullHour(defaultDuration));
     }
 
-     // Format the time in HH:MM:SS format
-     const formatTime = (time: number, publicDisplay?: boolean): string => {
-        const hours = Math.floor(time / 3600);
-        const minutes = Math.floor((time % 3600) / 60);
-        const seconds = time % 60;
-        let formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        if (publicDisplay) {
-            if (time < 3600) {
-                formattedTime = formattedTime.substring(3);
-            }
-            formattedTime = formattedTime.replace(/^0+/, '');
-        }
-        return formattedTime;
+    // Format Date object to HH:MM:SS in 24 hour time
+    const formatDatetime = (datetime: Date): string => {
+        return datetime.toLocaleTimeString('en-US', { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, hour12: false });
     };
+    
+    // Convert seconds to HH:MM:SS
+    const secondsToHHMMSS = (seconds: number, publicDisplay?: boolean) => {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const remainingSeconds = Math.floor(seconds % 60);
+        let time = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+        if (publicDisplay) {
+            time = time.replace(/^00:/, '').replace(/^0/, '');
+        }
+        return time;
+    }
 
-    // Check if the timer should be activated
+    const secondsTo12HR = (seconds: number) => {
+        const hours = Math.floor(seconds / 3600) % 12 || 12;
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const remainingSeconds = Math.floor(seconds % 60);
+        const period = hours >= 12 ? 'PM' : 'AM';
+        const time = `${hours.toString()}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')} ${period}`;
+        return time;
+    }
+
     useEffect(() => {
-        const intervalId = setInterval(() => {
-            const now = new Date();
-            const currentTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
-    
-            if (currentTime >= startTime && !timerIsActive) {
-                activateTimer(true);
-                const currentDuration = (new Date(`1970-01-01T${endTime}`).getTime() - new Date(`1970-01-01T${currentTime}`).getTime()) / 1000;
-                setDuration(currentDuration);
-            } else if ((timerIsActive && currentTime < startTime)) {
-                activateTimer(false);
-            }
+        const now = new Date();
+        const currentDuration = (endTime.getTime() - now.getTime()) / 1000;
 
-            // Reset clock if duration is negative
-            if (duration < 0) {
-                reachZero()
-            }
-        }, 1000);
-    
-        // Clear interval on component unmount
-        return () => clearInterval(intervalId);
+        // Check if the timer should be active and update the time left
+        if (now >= startTime) {
+            activateTimer(true);
+            setDuration(currentDuration);
+        }
+
+        // Check if the timer should be inactive
+        else if (timerIsActive) {
+            activateTimer(false);
+        }
+
+        // Check if the timer has reached zero
+        if (currentDuration <= 0) {
+            reachZero();
+        }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [startTime, endTime, timerIsActive, duration]);
+    }, [currentTime]); 
 
     return (
         <div className='leftPane' onClick={closeTimerModal}>
-            <TimerModal isOpen={timerModalIsOpen} onClose={closeTimerModal} onSave={setNewTimes} defaultStartTime={startTime} defaultEndTime={endTime} defaultDuration={formatTime(duration)} />
+            <TimerModal isOpen={timerModalIsOpen} onClose={closeTimerModal} onSave={setNewTimes} defaultStartTime={startTime} defaultEndTime={endTime} defaultDuration={secondsToHHMMSS(timeLeft)} formatDatetime={formatDatetime} />
             <div className='settingsButton' onClick={openTimerModal}>
                 <i className='fas fa-cog'></i>
             </div>
-            <CurrentTime />
-            <Timer totalTime={totalTime} timerDuration={duration} formatTime={formatTime} active={timerIsActive} reachZero={reachZero} />
+            <CurrentTime currentTime={secondsTo12HR(currentTime)} />
+            {timeLeft > 0 && (
+                <Timer duration={duration} timeLeft={timeLeft} secondsToHHMMSS={secondsToHHMMSS} active={timerIsActive} reachZero={reachZero} />
+            )}
+            {timeLeft <= 0 && (
+                <h1 style={{ color: 'pink' }}>Time is up!</h1>
+            )}
         </div>
     );
 };

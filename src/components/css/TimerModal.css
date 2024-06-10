@@ -57,6 +57,7 @@ input {
     outline: none;
     width: 45%;
     font-family: monospace;
+    transition: background-color 0.5s ease;
 }
 
 .red {
@@ -91,10 +92,25 @@ button {
     justify-content: space-between;
 }
 
-.saveButton {
+.saveButton, .cancelButton {
     background: #00942c;
+    transition: background-color 0.3s ease, transform 0.3s ease; /* Add this line */
+}
+
+.saveButton:hover, .cancelButton:hover {
+    background: #007a22; /* Darken the color */
+    transform: scale(1.05); /* Make the button pop up */
+}
+
+.saveButton:disabled {
+    background: #cccccc; /* Gray color */
+    cursor: not-allowed; /* Change cursor */
 }
 
 .cancelButton {
     background: #939AC8;
+}
+
+.cancelButton:hover {
+    background: #717aa8; /* Darken the color */
 }

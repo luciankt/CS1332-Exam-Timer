@@ -3,57 +3,49 @@ import './css/LeftPane.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
 interface LeftPaneProps {
-    totalTime: number;
-    timerDuration: number;
-    formatTime: (time: number, publicDisplay: boolean) => string;
+    duration: number;
+    timeLeft: number;
     active: boolean;
+    secondsToHHMMSS: (seconds: number, publicDisplay?: boolean) => string;
     reachZero: () => void;
 }
 
 const LeftPane: React.FC<LeftPaneProps> = (props) => {
 
-    // Calculate the remaining time for the circle
-    const [remainingTime, setRemainingTime] = React.useState(props.timerDuration);
-    React.useEffect(() => {
-        setRemainingTime(props.timerDuration);
-        const interval = setInterval(() => {
-            if (props.active && remainingTime > 0) {
-                setRemainingTime((prevRemainingTime: number) => prevRemainingTime - 1)
-            }
-        }, 1000);
-        return () => clearInterval(interval);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [props.timerDuration, props.active]);
-    const strokeDashoffset = (remainingTime / props.totalTime) * 1256;
-    const formattedTime = props.formatTime(remainingTime, true);
+    // Update circle graphic as timeLeft updates
+    const strokeDashoffset = (props.timeLeft / props.duration) * 1256;
     
     // Timer reaches zero
     React.useEffect(() => {
-        if (remainingTime <= 0 && props.active) {
+        if (props.timeLeft <= 0 && props.active) {
             props.reachZero();
         }
-    }, [remainingTime, props]);
+    }, [props]);
 
     return (
-        <div className="timer">
-            <div className="timeLeftText">Time Left</div>
-            <svg viewBox="0 0 480 480">
-                <circle
-                    r="200"
-                    cx="240"
-                    cy="240"
-                    className="backgroundCircle"
-                    ></circle>
-                <circle
-                    r="200"
-                    cx="240"
-                    cy="240"
-                    className="timerCircle"
-                    style={{ strokeDashoffset }}
-                ></circle>                
-            </svg>
-            <div className="timerText">{formattedTime}</div>
-        </div>
+        <>
+            <div className="timer">
+                <div className="timeLeftText">Time Left</div>
+                <svg viewBox="0 0 480 480">
+                    <circle
+                        r="200"
+                        cx="240"
+                        cy="240"
+                        className="backgroundCircle"
+                        ></circle>
+                    {props.active && (
+                        <circle
+                            r="200"
+                            cx="240"
+                            cy="240"
+                            className="timerCircle"
+                            style={{ strokeDashoffset }}
+                        ></circle>                
+                    )}
+                </svg>
+                <div className="timerText">{props.secondsToHHMMSS(props.timeLeft, true)}</div>
+            </div>
+        </>
     );
 };
         
