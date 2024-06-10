@@ -10,12 +10,13 @@ interface StartEndDisplayProps {
 
 const StartEndDisplay: React.FC<StartEndDisplayProps> = ({startTime, endTime, formatDatetime}) => {
     
+    // Check if the start or end times have seconds
     const hasSeconds = () => {
         return startTime.getSeconds() !== 0 || endTime.getSeconds() !== 0;
     }
 
+    // Convert to 12 hour time and truncate seconds if 0
     const formatStartEndTime = (time: string) => {
-        // Convert to 12 hour time and truncate seconds if 0
         const [hours, minutes, seconds] = time.split(':');
         let period = 'AM';
         let hour = Number(hours);
@@ -25,6 +26,7 @@ const StartEndDisplay: React.FC<StartEndDisplayProps> = ({startTime, endTime, fo
                 hour -= 12;
             }
         }
+        hour = hour === 0 ? 12 : hour;
         let formattedTime = `${hour}:${minutes}`;
         if (hasSeconds()) {
             formattedTime += `:${seconds}`;

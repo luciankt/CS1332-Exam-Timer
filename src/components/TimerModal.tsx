@@ -20,24 +20,27 @@ const TimerModal: React.FC<TimerModalProps> = ({ isOpen, onClose, onSave, defaul
     const endTimeRef = useRef(endTime);
 
     useEffect(() => {
+        if (isNaN(startTime.getTime()) || isNaN(endTime.getTime())) {
+            setStartTime(startTimeRef.current);
+            setEndTime(endTimeRef.current);
+        }
         startTimeRef.current = startTime;
         endTimeRef.current = endTime;
+        
     }, [startTime, endTime]);
 
     const handleModalClick = (e: React.MouseEvent) => {
         e.stopPropagation();
     };
 
+    // Close modal on Escape key press
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.key === 'Escape') {
                 onClose();
             }
         };
-
         document.addEventListener('keydown', handleKeyDown);
-
-        // Clean up the event listener when the component is unmounted
         return () => {
             document.removeEventListener('keydown', handleKeyDown);
         };
@@ -52,10 +55,14 @@ const TimerModal: React.FC<TimerModalProps> = ({ isOpen, onClose, onSave, defaul
             newDate.setMinutes(Number(minutes));
             newDate.setSeconds(Number(seconds));
             newDate.setMilliseconds(0);
+
             if (updateType === 'start') {
                 setStartTime(newDate);
                 duration = new Date(endTimeRef.current.getTime() - newDate.getTime()).toISOString().substr(11, 8);
             } else {
+                if (newDate.getTime() - startTimeRef.current.getTime() < 0) {
+                    newDate.setDate(newDate.getDate() + 1);
+                }
                 setEndTime(newDate);
                 duration = new Date(newDate.getTime() - startTimeRef.current.getTime()).toISOString().substr(11, 8);
             }
@@ -85,7 +92,7 @@ const TimerModal: React.FC<TimerModalProps> = ({ isOpen, onClose, onSave, defaul
                     <div className="modal-content" onClick={handleModalClick}>
                         <h2>Time Settings</h2>
                         <hr />
-                        
+
                         <div className="input-group">
                             <label htmlFor="startTime">Start:</label>
                             <input

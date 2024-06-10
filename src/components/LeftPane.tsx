@@ -38,7 +38,7 @@ const LeftPane: React.FC<LeftPaneProps> = (props) => {
     const defaultDuration = 3000; // Default duration of the timer in seconds
     const [startTime, setStartTime] = useState<Date>(calculateNextHalfHour(0)); // The start time
     const [endTime, setEndTime] = useState<Date>(calculateNextHalfHour(defaultDuration)); // The end time
-    const [duration, setTotalTime] = useState<number>(defaultDuration); // The total time from startTime to endTime
+    const [duration, setDuration] = useState<number>(defaultDuration); // The total time from startTime to endTime
     const [timeLeft, setTimeLeft] = useState<number>(defaultDuration); // The time left from now
     const [timerIsActive, activateTimer] = useState<boolean>(false); // Whether the timer is active
     const [timerModalIsOpen, setTimerModalIsOpen] = useState(false); // Whether the settings modal is open
@@ -56,17 +56,10 @@ const LeftPane: React.FC<LeftPaneProps> = (props) => {
     const setNewTimes = (newStartTime: Date, newEndTime: Date) => {
         let time = Math.floor((newEndTime.getTime() - newStartTime.getTime()) / 1000);
 
-        // Add a day to the end time if the new end time is before the new start time
-        if (time < 0) {
-            newEndTime.setDate(newEndTime.getDate() + 1);
-            time = Math.floor((newEndTime.getTime() - newStartTime.getTime()) / 1000);
-        }
-
         // Update the times
         setStartTime(newStartTime);
         setEndTime(newEndTime);
-        setTimeLeft(time);
-        setTotalTime(time);
+        setDuration(time);
     };
 
     const reachZero = () => {
@@ -76,6 +69,7 @@ const LeftPane: React.FC<LeftPaneProps> = (props) => {
 
     // Reset the timer to default values
     const resetTimer = () => {
+        activateTimer(true);
         setNewTimes(calculateNextHalfHour(0), calculateNextHalfHour(defaultDuration));
     }
 
@@ -116,9 +110,10 @@ const LeftPane: React.FC<LeftPaneProps> = (props) => {
             setTimeLeft(currentDuration);
         }
 
-        // Check if the timer should be inactive
-        else if (timerIsActive) {
+        // Make timer inactive and display total time
+        else {
             activateTimer(false);
+            setTimeLeft(duration);
         }
 
         // Check if the timer has reached zero
