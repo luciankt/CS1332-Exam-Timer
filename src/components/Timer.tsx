@@ -13,7 +13,7 @@ interface LeftPaneProps {
 const LeftPane: React.FC<LeftPaneProps> = (props) => {
 
     // Update circle graphic as timeLeft updates
-    const strokeDashoffset = (props.timeLeft / props.duration) * 1256;
+    const strokeDashoffset = ((props.timeLeft - 1) / props.duration) * 1256;
     
     // Timer reaches zero
     React.useEffect(() => {

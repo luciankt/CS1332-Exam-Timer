@@ -15,7 +15,7 @@ const LeftPane: React.FC<LeftPaneProps> = (props) => {
     // Calculate current time in seconds
     const calculateCurrentTime = () => {
         const now = new Date();
-        return now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+        return Math.ceil(now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds());
     }
 
     // Recalculate current time every second
@@ -102,7 +102,7 @@ const LeftPane: React.FC<LeftPaneProps> = (props) => {
 
     useEffect(() => {
         const now = new Date();
-        const currentDuration = (endTime.getTime() - now.getTime() + 1) / 1000;
+        const currentDuration = Math.ceil((endTime.getTime() - now.getTime()) / 1000);
 
         // Check if the timer should be active and update the time left
         if (now >= startTime) {
