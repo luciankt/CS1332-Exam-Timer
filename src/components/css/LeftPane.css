@@ -11,13 +11,17 @@
     flex-direction: column;
 }
 
-.settingsButton {
+.timerSettingsButton {
     color: white;
-    font-size: 3em;
+    font-size: 2.5em;
     position: absolute;
     top: 15px;
     left: 15px;
     cursor: pointer;
+}
+
+.timerSettingsButton:hover {
+    transform: scale(1.2);
 }
 
 .startEndTimes {

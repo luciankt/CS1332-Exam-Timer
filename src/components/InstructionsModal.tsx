@@ -1,33 +1,25 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './css/Modal.css';
 
-interface TimerModalProps {
+interface InstructionsModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSave: (startTime: Date, endTime: Date) => void;
-    formatDatetime: (datetime: Date) => string;
-    defaultStartTime: Date;
-    defaultEndTime: Date;
-    defaultDuration: string;
+    onSave: (beforeText: string, afterText: string) => void;
+    beforeText: string;
+    afterText: string;
 }
 
-const TimerModal: React.FC<TimerModalProps> = ({ isOpen, onClose, onSave, defaultStartTime, defaultEndTime, defaultDuration, formatDatetime }) => {
-    const [startTime, setStartTime] = useState<Date>(defaultStartTime);
-    const [endTime, setEndTime] = useState<Date>(defaultEndTime);
-    const [duration, setDuration] = useState<string>(defaultDuration); // Internal to this component; not emitted
+const InstructionsModal: React.FC<InstructionsModalProps> = ({ isOpen, onClose, onSave, beforeText, afterText }) => {
     
-    const startTimeRef = useRef(startTime);
-    const endTimeRef = useRef(endTime);
+    const beforeTextRef = useRef('before');
+    const afterTextRef = useRef('after');
 
     useEffect(() => {
-        if (isNaN(startTime.getTime()) || isNaN(endTime.getTime())) {
-            setStartTime(startTimeRef.current);
-            setEndTime(endTimeRef.current);
-        }
-        startTimeRef.current = startTime;
-        endTimeRef.current = endTime;
+
+        beforeTextRef.current = beforeText;
+        afterTextRef.current = afterText;
         
-    }, [startTime, endTime]);
+    }, [beforeText, afterText]);
 
     const handleModalClick = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -48,42 +40,23 @@ const TimerModal: React.FC<TimerModalProps> = ({ isOpen, onClose, onSave, defaul
 
     const updateTime = (updateType: string, newTime: HTMLInputElement["value"]) => {
         try {
-            let duration;
-            const [hours, minutes, seconds] = newTime.split(':');
-            const newDate = new Date();
-            newDate.setHours(Number(hours));
-            newDate.setMinutes(Number(minutes));
-            newDate.setSeconds(Number(seconds));
-            newDate.setMilliseconds(0);
-
-            if (updateType === 'start') {
-                setStartTime(newDate);
-                duration = new Date(endTimeRef.current.getTime() - newDate.getTime()).toISOString().substr(11, 8);
+           
+            if (updateType === 'before') {
+                beforeTextRef.current = newTime;
             } else {
-                if (newDate.getTime() - startTimeRef.current.getTime() < 0) {
-                    newDate.setDate(newDate.getDate() + 1);
-                }
-                setEndTime(newDate);
-                duration = new Date(newDate.getTime() - startTimeRef.current.getTime()).toISOString().substr(11, 8);
+                afterTextRef.current = newTime;
             }
-            setDuration(duration);
-        } catch (error) {
+        }
+
+        catch (error) {
             return;
         }
     }
 
     const handleSave = () => {
-        onSave(startTimeRef.current, endTimeRef.current);
+        onSave(beforeTextRef.current, afterTextRef.current);
         onClose();
     };
-
-    const invalidTimes = () => {
-        return new Date(startTime) < new Date() && new Date(endTime) < new Date()
-    }
-
-    const invalidDuration = () => {
-        return duration === '00:00:00';
-    }
 
     return (
         <>
@@ -94,11 +67,11 @@ const TimerModal: React.FC<TimerModalProps> = ({ isOpen, onClose, onSave, defaul
                         <hr />
 
                         <div className="input-group">
-                            <label htmlFor="startTime">Start:</label>
+                            <label htmlFor="beforeText">Start:</label>
                             <input
                                 type="time"
-                                id="startTime"
-                                value={formatDatetime(startTime)}
+                                id="beforeText"
+                                value={formatDatetime(beforeText)}
                                 onChange={(e) => updateTime('start', e.target.value)}
                                 step="1"
                                 className={`${invalidTimes() ? 'red' : 'gray'}`}
@@ -106,11 +79,11 @@ const TimerModal: React.FC<TimerModalProps> = ({ isOpen, onClose, onSave, defaul
                         </div>
 
                         <div className="input-group">
-                            <label htmlFor="endTime">End:</label>
+                            <label htmlFor="afterText">End:</label>
                             <input
                                 type="time"
-                                id="endTime"
-                                value={formatDatetime(endTime)}
+                                id="afterText"
+                                value={formatDatetime(afterText)}
                                 onChange={(e) => updateTime('end', e.target.value)}
                                 step="1"
                                 className={`${invalidTimes() ? 'red' : 'gray'}`}
@@ -118,7 +91,7 @@ const TimerModal: React.FC<TimerModalProps> = ({ isOpen, onClose, onSave, defaul
                         </div>
 
                         <div className="input-group">
-                            <label htmlFor="endTime">Duration:</label>
+                            <label htmlFor="afterText">Duration:</label>
                             <input
                                 type="text"
                                 id="duration"
@@ -157,4 +130,4 @@ const TimerModal: React.FC<TimerModalProps> = ({ isOpen, onClose, onSave, defaul
         </>
     );
 };
-export default TimerModal;
+export default InstructionsModal;

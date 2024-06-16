@@ -1,15 +1,16 @@
 import React from 'react';
 import SyncButton from './SyncButton';
 
-interface InstructionsProps {}
+interface InstructionsProps {
+    instructions: string;
+    onInstructionsChange: (instructions: string) => void;
+}
 
 const Instructions: React.FC<InstructionsProps> = (props) => {
 
-    const defaultInstructions = `DO NOT OPEN THE EXAM YET.\n\nSCAN YOUR BUZZCARD, OR ELSE YOU MAY RECEIVE A ZERO.\n\nRAISE YOUR HAND TO BE ESCORTED TO THE RESTROOM.`
-
     const [editMode, setEditMode] = React.useState(false);
     const [syncInProgress, setSyncInProgress] = React.useState(false);
-    const [instructions, setInstructions] = React.useState(defaultInstructions);
+    const [instructions, setInstructions] = React.useState(props.instructions);
 
     function openEdit() {
         if (!editMode && !syncInProgress) {

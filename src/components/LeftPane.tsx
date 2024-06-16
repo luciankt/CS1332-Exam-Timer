@@ -126,7 +126,7 @@ const LeftPane: React.FC<LeftPaneProps> = (props) => {
     return (
         <div className='leftPane' onClick={closeTimerModal}>
             <TimerModal isOpen={timerModalIsOpen} onClose={closeTimerModal} onSave={setNewTimes} defaultStartTime={startTime} defaultEndTime={endTime} defaultDuration={secondsToHHMMSS(timeLeft)} formatDatetime={formatDatetime} />
-            <div className='settingsButton' onClick={openTimerModal}>
+            <div className='timerSettingsButton' onClick={openTimerModal}>
                 <i className='fas fa-cog'></i>
             </div>
             <CurrentTime currentTime={secondsTo12HR(currentTime)} />

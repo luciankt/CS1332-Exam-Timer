@@ -11,6 +11,19 @@
     flex-direction: column;
 }
 
+.instructionsSettingsButton {
+    color: white;
+    font-size: 2em;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    cursor: pointer;
+}
+
+.instructionsSettingsButton:hover {
+    transform: scale(1.2);
+}
+
 h1 {
     color: white;
     font-size: 3em;
