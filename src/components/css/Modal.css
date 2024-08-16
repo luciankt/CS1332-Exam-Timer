@@ -22,10 +22,14 @@
 
 .modal-content {
     background: #D2D6EC;
-    padding: 20px;
     border-radius: 20px;
     height: 50%;
     padding: 5% 15% 10% 15%;
+}
+
+.larger-modal {
+    width: 65%;
+    height: 70%;
 }
 
 hr {
@@ -43,7 +47,16 @@ hr {
     font-size: 2em;
 }
 
-.input-group label {
+.input-group-large {
+    display: flex;
+    justify-content: right;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 2em;
+    height: 36%;
+}
+
+label {
     margin-right: 10px;
 }
 

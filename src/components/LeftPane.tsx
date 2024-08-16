@@ -7,7 +7,9 @@ import TimerModal from './TimerModal';
 import StartEndDisplay from './StartEndDisplay';
 
 // Props
-interface LeftPaneProps {}
+interface LeftPaneProps {
+    onExamStatusChange: (isActive: boolean) => void;
+}
 
 // LeftPane component
 const LeftPane: React.FC<LeftPaneProps> = (props) => {
@@ -43,6 +45,11 @@ const LeftPane: React.FC<LeftPaneProps> = (props) => {
     const [timerIsActive, activateTimer] = useState<boolean>(false); // Whether the timer is active
     const [timerModalIsOpen, setTimerModalIsOpen] = useState(false); // Whether the settings modal is open
     const [currentTime, setCurrentTime] = React.useState(calculateCurrentTime());
+
+    // Call onExamStatusChange when timerIsActive changes
+    React.useEffect(() => {
+        props.onExamStatusChange(timerIsActive);
+    }, [props, timerIsActive]);
 
     // Settings modal
     const openTimerModal = () => setTimerModalIsOpen(true);

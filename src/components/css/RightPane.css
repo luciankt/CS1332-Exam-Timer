@@ -49,6 +49,13 @@ textarea {
     background-color: #D9D9D9;
     outline: none;
     transition: 0;
+    padding: 10px;
+}
+
+.input-group-large textarea {
+    font-size: 0.75em;
+    height: 90%;
+    min-width: 100%;
 }
 
 .edit {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import SyncButton from './SyncButton';
 
 interface InstructionsProps {
@@ -8,22 +8,31 @@ interface InstructionsProps {
 
 const Instructions: React.FC<InstructionsProps> = (props) => {
 
-    const [editMode, setEditMode] = React.useState(false);
-    const [syncInProgress, setSyncInProgress] = React.useState(false);
-    const [instructions, setInstructions] = React.useState(props.instructions);
+    const [editMode, setEditMode] = useState(false);
+    const [syncInProgress, setSyncInProgress] = useState(false);
+    const [instructions, setInstructions] = useState(props.instructions);
 
+    // Update instructions state when props.instructions changes
+    useEffect(() => {
+        setInstructions(props.instructions);
+    }, [props.instructions]);
+
+    // Open edit mode
     function openEdit() {
         if (!editMode && !syncInProgress) {
             setEditMode(true);
         }
     }
 
+    // Close edit mode and save changes
     function closeEdit() {
         if (editMode && !syncInProgress) {
             setEditMode(false);
         }
+        props.onInstructionsChange(instructions);
     }
 
+    // Modify the text and enter edit mode
     function edit(value: string) {
         setInstructions(value);
         if (!editMode) {
@@ -31,9 +40,13 @@ const Instructions: React.FC<InstructionsProps> = (props) => {
         }
     }
 
+    // Sync the changes to all sections and exit edit mode
     function syncEdit() {
         setInstructions(instructions);
         setSyncInProgress(true);
+
+        // TODO: Sync logic here
+
         setTimeout(() => {
             setSyncInProgress(false);
             setEditMode(false);
