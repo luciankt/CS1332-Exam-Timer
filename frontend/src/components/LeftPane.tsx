@@ -8,7 +8,7 @@ import StartEndDisplay from './StartEndDisplay';
 
 // Props
 interface LeftPaneProps {
-    onExamStatusChange: (isActive: boolean) => void;
+    onExamStatusChange: (status: string) => void;
 }
 
 // LeftPane component
@@ -43,13 +43,15 @@ const LeftPane: React.FC<LeftPaneProps> = (props) => {
     const [duration, setDuration] = useState<number>(defaultDuration); // The total time from startTime to endTime
     const [timeLeft, setTimeLeft] = useState<number>(defaultDuration); // The time left from now
     const [timerIsActive, activateTimer] = useState<boolean>(false); // Whether the timer is active
+    const [isExamEnded, setIsExamEnded] = useState<boolean>(false); // Whether the exam has completed
     const [timerModalIsOpen, setTimerModalIsOpen] = useState(false); // Whether the settings modal is open
     const [currentTime, setCurrentTime] = React.useState(calculateCurrentTime());
 
     // Call onExamStatusChange when timerIsActive changes
     React.useEffect(() => {
-        props.onExamStatusChange(timerIsActive);
-    }, [props, timerIsActive]);
+        const status = isExamEnded ? 'ended' : timerIsActive ? 'active' : 'inactive'
+        props.onExamStatusChange(status);
+    }, [props, timerIsActive, isExamEnded]);
 
     // Settings modal
     const openTimerModal = () => setTimerModalIsOpen(true);
@@ -71,14 +73,15 @@ const LeftPane: React.FC<LeftPaneProps> = (props) => {
 
     const reachZero = () => {
         activateTimer(false);
-        setTimeout(resetTimer, 2500);
+        setIsExamEnded(true);
+        // setTimeout(resetTimer, 2500);
     }
 
-    // Reset the timer to default values
-    const resetTimer = () => {
-        activateTimer(true);
-        setNewTimes(calculateNextHalfHour(0), calculateNextHalfHour(defaultDuration));
-    }
+    // // Reset the timer to default values
+    // const resetTimer = () => {
+    //     activateTimer(true);
+    //     setNewTimes(calculateNextHalfHour(0), calculateNextHalfHour(defaultDuration));
+    // }
 
     // Format Date object to HH:MM:SS in 24 hour time
     const formatDatetime = (datetime: Date): string => {
@@ -99,10 +102,11 @@ const LeftPane: React.FC<LeftPaneProps> = (props) => {
 
     // Convert seconds to 12 hour time with AM/PM
     const secondsTo12HR = (seconds: number) => {
-        const hours = Math.floor(seconds / 3600) % 12 || 12;
+        const hours24 = Math.floor(seconds / 3600);
+        const hours = hours24 % 12 || 12;
         const minutes = Math.floor((seconds % 3600) / 60);
         const remainingSeconds = Math.floor(seconds % 60);
-        const period = hours >= 12 ? 'PM' : 'AM';
+        const period = hours24 >= 12 ? 'PM' : 'AM';
         let time = `${hours.toString()}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')} ${period}`;
         return time;
     }
@@ -118,7 +122,7 @@ const LeftPane: React.FC<LeftPaneProps> = (props) => {
         }
 
         // Make timer inactive and display total time
-        else {
+        else if (!isExamEnded) {
             activateTimer(false);
             setTimeLeft(duration);
         }
@@ -137,12 +141,7 @@ const LeftPane: React.FC<LeftPaneProps> = (props) => {
                 <i className='fas fa-cog'></i>
             </div>
             <CurrentTime currentTime={secondsTo12HR(currentTime)} />
-            {timeLeft > 0 && (
-                <Timer duration={duration} timeLeft={timeLeft} secondsToHHMMSS={secondsToHHMMSS} active={timerIsActive} reachZero={reachZero} />
-            )}
-            {timeLeft <= 0 && (
-                <h1 style={{ color: 'pink' }}>Time is up!</h1>
-            )}
+            <Timer duration={duration} timeLeft={timeLeft} secondsToHHMMSS={secondsToHHMMSS} active={timerIsActive} reachZero={reachZero} examEnded={isExamEnded} />
             <StartEndDisplay startTime={startTime} endTime={endTime} formatDatetime={formatDatetime} />
         </div>
     );

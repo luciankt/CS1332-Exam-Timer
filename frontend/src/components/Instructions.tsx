@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import SyncButton from './SyncButton';
+import axios from 'axios';
 
 interface InstructionsProps {
     instructions: string;
+    examActive: boolean;
     onInstructionsChange: (instructions: string) => void;
 }
 
@@ -45,12 +47,22 @@ const Instructions: React.FC<InstructionsProps> = (props) => {
         setInstructions(instructions);
         setSyncInProgress(true);
 
-        // TODO: Sync logic here
+        // Send the updated instructions to the backend
+        axios.post('http://34.123.186.46:3000/messages', {
+            newBeforeInstructionsText: props.examActive ? undefined : instructions,
+            newDuringInstructionsText: props.examActive ? instructions : undefined
+        })
+        .then(response => {
+            console.log('Message updated successfully:', response.data);
+        })
+        .catch(error => {
+            console.error('There was an error updating the message!', error);
+        });
 
         setTimeout(() => {
             setSyncInProgress(false);
             setEditMode(false);
-        }, 5000);
+        }, 500);
     }
 
     return (

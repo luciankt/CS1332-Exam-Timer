@@ -4,15 +4,15 @@ import './css/Modal.css';
 interface InstructionsModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSave: (beforeText: string, afterText: string) => void;
+    onSave: (beforeText: string, duringText: string) => void;
     beforeText: string;
-    afterText: string;
+    duringText: string;
 }
 
-const InstructionsModal: React.FC<InstructionsModalProps> = ({ isOpen, onClose, onSave, beforeText, afterText }) => {
+const InstructionsModal: React.FC<InstructionsModalProps> = ({ isOpen, onClose, onSave, beforeText, duringText }) => {
     
     const [beforeTextRef, setBeforeText] = React.useState(beforeText);
-    const [afterTextRef, setAfterText] = React.useState(afterText);
+    const [duringTextRef, setDuringText] = React.useState(duringText);
 
     const handleModalClick = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -35,21 +35,21 @@ const InstructionsModal: React.FC<InstructionsModalProps> = ({ isOpen, onClose, 
     useEffect(() => {
         if (!isOpen) {
             setBeforeText(beforeText);
-            setAfterText(afterText);
+            setDuringText(duringText);
         }
-    }, [isOpen, beforeText, afterText]);
+    }, [isOpen, beforeText, duringText]);
 
     const updateText = (updateType: string, newText: HTMLInputElement["value"]) => {
         if (updateType === 'before') {
             setBeforeText(newText);
         }
         else {
-            setAfterText(newText);
+            setDuringText(newText);
         }
     }
 
     const handleSave = () => {
-        onSave(beforeTextRef, afterTextRef);
+        onSave(beforeTextRef, duringTextRef);
         onClose();
     };
 
@@ -71,11 +71,11 @@ const InstructionsModal: React.FC<InstructionsModalProps> = ({ isOpen, onClose, 
                         </div>
 
                         <div className="input-group-large">
-                            <label htmlFor="afterText">During Exam:</label>
+                            <label htmlFor="duringText">During Exam:</label>
                             <textarea
-                                id="afterText"
-                                value={afterTextRef}
-                                onChange={(e) => updateText('after', e.target.value)}
+                                id="duringText"
+                                value={duringTextRef}
+                                onChange={(e) => updateText('during', e.target.value)}
                             />
                         </div>
 

@@ -6,6 +6,7 @@ interface LeftPaneProps {
     duration: number;
     timeLeft: number;
     active: boolean;
+    examEnded: boolean;
     secondsToHHMMSS: (seconds: number, publicDisplay?: boolean) => string;
     reachZero: () => void;
 }
@@ -25,14 +26,15 @@ const LeftPane: React.FC<LeftPaneProps> = (props) => {
     return (
         <>
             <div className="timer">
-                <div className="timeLeftText">Time Left</div>
+                {(!props.examEnded) && <div className="timeLeftText">Time Left</div> }
+                {(props.examEnded) && <div className="timeLeftText examCompleteText">Exam Complete!</div> }
                 <svg viewBox="0 0 480 480">
                     <circle
                         r="200"
                         cx="240"
                         cy="240"
-                        className="backgroundCircle"
-                        ></circle>
+                        className={`backgroundCircle ${props.examEnded ? 'examEndedTimer' : ''}`}
+                    ></circle>
                     {props.active && (
                         <circle
                             r="200"
@@ -43,7 +45,7 @@ const LeftPane: React.FC<LeftPaneProps> = (props) => {
                         ></circle>                
                     )}
                 </svg>
-                <div className="timerText">{props.secondsToHHMMSS(props.timeLeft, true)}</div>
+                {(!props.examEnded) && <div className="timerText">{props.secondsToHHMMSS(props.timeLeft, true)}</div> }
             </div>
         </>
     );

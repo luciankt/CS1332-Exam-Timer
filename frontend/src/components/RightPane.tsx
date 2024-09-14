@@ -2,26 +2,34 @@ import React, { useState, useEffect } from 'react';
 import './css/RightPane.css';
 import Instructions from './Instructions';
 import InstructionsModal from './InstructionsModal';
+import axios from 'axios';
 
 interface RightPaneProps {
     examActive: boolean;
+    examEnded: boolean;
 }
-
-const DEFAULT_BEFORE_INSTRUCTIONS = `DO NOT OPEN THE EXAM YET.\n\nSCAN YOUR BUZZCARD, OR ELSE YOU MAY RECEIVE A ZERO.\n\nRAISE YOUR HAND TO BE ESCORTED TO THE RESTROOM.`
-const DEFAULT_AFTER_INSTRUCTIONS = `RAISE YOUR HAND TO BE ESCORTED TO THE RESTROOM.`
 
 const RightPane: React.FC<RightPaneProps> = (props) => {
 
-    const [beforeInstructions, setBeforeInstructions] = useState(DEFAULT_BEFORE_INSTRUCTIONS);
-    const [afterInstructions, setAfterInstructions] = useState(DEFAULT_AFTER_INSTRUCTIONS);
+    const [beforeInstructions, setBeforeInstructions] = useState('');
+    const [duringInstructions, setDuringInstructions] = useState('');
+    const [afterInstructions, setAfterInstructions] = useState('');
     const [displayedInstructions, setDisplayedInstructions] = useState(beforeInstructions);
-    const [examActive, setExamActive] = useState(props.examActive);
 
     // Update instructions state when props.instructions changes
     useEffect(() => {
-        setExamActive(props.examActive);
-        setDisplayedInstructions(examActive ? afterInstructions : beforeInstructions);
-    }, [props.examActive, examActive, beforeInstructions, afterInstructions]);
+        axios.get('http://34.123.186.46:3000/messages')
+        .then(response => {
+            const instructions = response.data;
+            setBeforeInstructions(instructions.before);
+            setDuringInstructions(instructions.before);
+            setAfterInstructions(instructions.after);
+            setDisplayedInstructions(props.examActive ? instructions.during : props.examEnded ? instructions.after : instructions.before);
+        })
+        .catch(error => {
+          console.error('There was an error fetching the data!', error);
+        });
+    }, [props.examActive, props.examEnded, beforeInstructions, duringInstructions, afterInstructions]);
 
     // Settings modal
     const [instructionsModalIsOpen, setInstructionsModalIsOpen] = useState(false); // Whether the settings modal is open
@@ -33,15 +41,15 @@ const RightPane: React.FC<RightPaneProps> = (props) => {
     };
 
     // Set new instructions from modal
-    const setNewInstructions = (newBeforeText: string, newAfterText: string) => {
+    const setNewInstructions = (newBeforeText: string, newDuringText: string) => {
         setBeforeInstructions(newBeforeText);
-        setAfterInstructions(newAfterText);
+        setDuringInstructions(newDuringText);
     }
 
     // Set new instructions from editing display panel
     const setNewInstructionsFromDisplay = (newInstructions: string) => {
-        if (examActive) {
-            setAfterInstructions(newInstructions);
+        if (props.examActive) {
+            setDuringInstructions(newInstructions);
         } else {
             setBeforeInstructions(newInstructions);
         }
@@ -49,12 +57,12 @@ const RightPane: React.FC<RightPaneProps> = (props) => {
 
     return (
         <div className='rightPane' onClick={closeInstructionsModal}>
-            <InstructionsModal isOpen={instructionsModalIsOpen} onClose={closeInstructionsModal} onSave={setNewInstructions} beforeText={beforeInstructions} afterText={afterInstructions} />
+            <InstructionsModal isOpen={instructionsModalIsOpen} onClose={closeInstructionsModal} onSave={setNewInstructions} beforeText={beforeInstructions} duringText={duringInstructions} />
             <div className='instructionsSettingsButton' onClick={openInstructionsModal}>
                 <i className="fa-solid fa-pencil"></i>
             </div>
             <h1>Instructions and Clarifications</h1>
-            <Instructions instructions={displayedInstructions} onInstructionsChange={setNewInstructionsFromDisplay} />
+            <Instructions instructions={displayedInstructions} onInstructionsChange={setNewInstructionsFromDisplay} examActive={props.examActive} />
         </div>
     );
 };
