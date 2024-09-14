@@ -1,5 +1,6 @@
 {
   "name": "exam-timer",
+  "homepage": "https://luciankt.github.io/",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
