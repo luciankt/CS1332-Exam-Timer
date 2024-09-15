@@ -17,8 +17,11 @@ let instructions = {
   after: defaultInstructions.After_Exam,
 }
 
+console.log('Started')
+
 // GET endpoint to retrieve the messages
 app.get('/messages', (req, res) => {
+  console.log('received smth');
   res.json(instructions);
 });
 
