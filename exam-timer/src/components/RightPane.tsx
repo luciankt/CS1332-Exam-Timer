@@ -7,6 +7,8 @@ import axios from 'axios';
 interface RightPaneProps {
     examActive: boolean;
     examEnded: boolean;
+    passcode: string;
+    ip: string;
 }
 
 const RightPane: React.FC<RightPaneProps> = (props) => {
@@ -16,30 +18,62 @@ const RightPane: React.FC<RightPaneProps> = (props) => {
     const [afterInstructions, setAfterInstructions] = useState('');
     const [displayedInstructions, setDisplayedInstructions] = useState(beforeInstructions);
 
-    // Update instructions state when props.instructions changes
+    // Update instructions state when props.instructions changes or fetched
     useEffect(() => {
-        const fetchInstructions = () => {
-            axios.get('https://cs1332-exam-timer-407797320918.us-east1.run.app/messages')
-                .then(response => {
+        const fetchInstructions = (force: boolean) => {
+            axios.get(`${props.ip}/messages`, {
+                params: {
+                    passcode: props.passcode
+                }
+            })
+            .then(response => {
+                    // console.log('Fetched instructions:', response.data);
                     const instructions = response.data;
-                    setBeforeInstructions(instructions.before);
-                    setDuringInstructions(instructions.during);
-                    setAfterInstructions(instructions.after);
-                    setDisplayedInstructions(props.examActive ? instructions.during : props.examEnded ? instructions.after : instructions.before);
+                    let changed = false;
+                    const currTime = new Date().getTime();
+
+                    if (force) {
+                        changed = true;
+                        setBeforeInstructions(instructions.before);
+                        setDuringInstructions(instructions.during);
+                        setAfterInstructions(instructions.after);
+                    } else {
+                        if (beforeInstructions === '' || (currTime - instructions.lastChange < 15000)) {
+                            setBeforeInstructions(instructions.before);
+                            changed = true;
+                        }
+                        if (duringInstructions === '' || (currTime - instructions.lastChange < 15000)) {
+                            setDuringInstructions(instructions.during);
+                            changed = true;
+                        }
+                        if (afterInstructions === '' || (currTime - instructions.lastChange < 15000)) {
+                            setAfterInstructions(instructions.after);
+                            changed = true;
+                        }
+                    }
+                    if (changed) {
+                        console.log('Instructions changed, updating display');
+                        setDisplayedInstructions(props.examActive ? instructions.during : props.examEnded ? instructions.after : instructions.before);
+                    }
                 })
-                .catch(error => {
-                    console.error('There was an error fetching the data!', error);
-                });
+            .catch(error => {
+                console.error('There was an error fetching the data!', error);
+            });
         };
 
         // Fetch instructions immediately
-        fetchInstructions();
+        fetchInstructions(true);
 
-        // Set up interval to fetch instructions every 30 seconds
-        const intervalId = setInterval(fetchInstructions, 30000);
+        // Set up interval to fetch instructions every 15 seconds
+        const intervalId = setInterval(fetchInstructions, 15000);
 
         // Clear interval on component unmount
         return () => clearInterval(intervalId);
+    }, [props.examActive, props.examEnded, beforeInstructions, duringInstructions, afterInstructions, props.passcode, props.ip]);
+
+    // Change displayed instructions if exam starts or ends
+    useEffect(() => {
+        setDisplayedInstructions(props.examActive ? duringInstructions : props.examEnded ? afterInstructions : beforeInstructions);
     }, [props.examActive, props.examEnded, beforeInstructions, duringInstructions, afterInstructions]);
 
     // Settings modal
@@ -55,6 +89,19 @@ const RightPane: React.FC<RightPaneProps> = (props) => {
     const setNewInstructions = (newBeforeText: string, newDuringText: string) => {
         setBeforeInstructions(newBeforeText);
         setDuringInstructions(newDuringText);
+
+        // Send the updated instructions to the backend
+        axios.post(`${props.ip}/messages`, {
+            passcode: props.passcode,
+            newBeforeInstructionsText: newBeforeText,
+            newDuringInstructionsText: newDuringText
+        })
+        .then(response => {
+            console.log('Message updated successfully:', response.data);
+        })
+        .catch(error => {
+            console.error('There was an error updating the message!', error);
+        });
     }
 
     // Set new instructions from editing display panel
@@ -73,7 +120,7 @@ const RightPane: React.FC<RightPaneProps> = (props) => {
                 <i className="fa-solid fa-pencil"></i>
             </div>
             <h1>Instructions and Clarifications</h1>
-            <Instructions instructions={displayedInstructions} onInstructionsChange={setNewInstructionsFromDisplay} examActive={props.examActive} />
+            <Instructions instructions={displayedInstructions} onInstructionsChange={setNewInstructionsFromDisplay} examActive={props.examActive} passcode={props.passcode} ip={props.ip} />
         </div>
     );
 };

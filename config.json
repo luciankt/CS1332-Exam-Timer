@@ -1,5 +1,16 @@
 {
-    "Before_Exam": "DO NOT OPEN THE EXAM YET.\n\nSCAN YOUR BUZZCARD, OR ELSE YOU MAY RECEIVE A ZERO.\n\nRAISE YOUR HAND TO BE ESCORTED TO THE RESTROOM.",
-    "During_Exam": "RAISE YOUR HAND TO BE ESCORTED TO THE RESTROOM.",
-    "After_Exam": "STAY SEATED UNTIL YOUR EXAM IS COLLECTED.\n\nDO NOT DISCUSS THE EXAM TODAY.\nIT IS AN HONOR CODE VIOLATION."
+    "ip": "https://cs1332-exam-timer-407797320918.us-east1.run.app",
+    "port": 8080,
+    "allInstructions": {
+        "*": {
+            "before": "Type the pre-exam instructions here.",
+            "during": "Type the during-exam instructions here.",
+            "after": "STAY SEATED UNTIL DISMISSED."
+        },
+        "cs1332": {
+            "before": "DO NOT OPEN THE EXAM YET.\n\nSCAN YOUR BUZZCARD, OR ELSE YOU MAY RECEIVE A ZERO.\n\nRAISE YOUR HAND TO BE ESCORTED TO THE RESTROOM.",
+            "during": "RAISE YOUR HAND TO BE ESCORTED TO THE RESTROOM.",
+            "after": "STAY SEATED UNTIL YOUR EXAM IS COLLECTED.\n\nDO NOT DISCUSS THE EXAM TODAY.\nIT IS AN HONOR CODE VIOLATION."
+        }
+    }
 }

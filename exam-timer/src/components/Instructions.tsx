@@ -5,6 +5,8 @@ import axios from 'axios';
 interface InstructionsProps {
     instructions: string;
     examActive: boolean;
+    passcode: string;
+    ip: string;
     onInstructionsChange: (instructions: string) => void;
 }
 
@@ -48,7 +50,8 @@ const Instructions: React.FC<InstructionsProps> = (props) => {
         setSyncInProgress(true);
 
         // Send the updated instructions to the backend
-        axios.post('https://cs1332-exam-timer-407797320918.us-east1.run.app/messages', {
+        axios.post(`${props.ip}/messages`, {
+            passcode: props.passcode,
             newBeforeInstructionsText: props.examActive ? undefined : instructions,
             newDuringInstructionsText: props.examActive ? instructions : undefined
         })

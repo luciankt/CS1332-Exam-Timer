@@ -8,34 +8,51 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const port = 8080;
-const ip = "https://cs1332-exam-timer-407797320918.us-east1.run.app";
 
-app.use(cors({
-    origin: 'https://cs1332-exam-timer-407797320918.us-east1.run.app'
-}));
+// Initialize variables
+const configPath = path.join(__dirname, './config.json');
+const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+const ip = config.ip;
+const port = config.port;
+let allInstructions = config.allInstructions;
+
+// Initialize express
+app.use(cors({ origin: ip }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'exam-timer/dist')));
 
-// Initialize two string messages
-const configPath = path.join(__dirname, './config.json');
-const defaultInstructions = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-let instructions = {
-  before: defaultInstructions.Before_Exam,
-  during: defaultInstructions.During_Exam,
-  after: defaultInstructions.After_Exam,
-};
-
 // GET endpoint to retrieve the messages
 app.get('/messages', (req, res) => {
-  res.json(instructions);
+  const passcode = req.query.passcode;
+  if (!passcode || passcode == '') {
+    // res.json(allInstructions); // WARNING: INSECURE, DO NOT USE IN PRODUCTION
+    passcode = '*';
+  }
+  else if (!allInstructions[passcode]) {
+    allInstructions[passcode] = allInstructions['*'];
+    allInstructions[passcode].lastChange = new Date().getTime();
+  }
+  res.json(allInstructions[passcode]);
 });
 
 // POST endpoint to modify the messages
 app.post('/messages', (req, res) => {
-  const { newBeforeInstructionsText, newDuringInstructionsText } = req.body;
-  if (newBeforeInstructionsText !== undefined) instructions.before = newBeforeInstructionsText;
-  if (newDuringInstructionsText !== undefined) instructions.during = newDuringInstructionsText;
+  const { passcode, newBeforeInstructionsText, newDuringInstructionsText } = req.body;
+  if (!allInstructions[passcode]) {
+    allInstructions[passcode] = allInstructions['*'];
+    allInstructions[passcode].lastChange = new Date().getTime();
+  }
+  
+  let instructions = allInstructions[passcode];
+ 
+  if (newBeforeInstructionsText !== undefined) {
+    instructions.before = newBeforeInstructionsText;
+    instructions.lastChange = new Date().getTime();
+  }
+  if (newDuringInstructionsText !== undefined) {
+    instructions.during = newDuringInstructionsText;
+    instructions.lastChange = new Date().getTime();
+  }
   res.json(instructions);
 });
 
