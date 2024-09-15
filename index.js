@@ -23,7 +23,7 @@ app.use(express.static(path.join(__dirname, 'exam-timer/dist')));
 
 // GET endpoint to retrieve the messages
 app.get('/messages', (req, res) => {
-  const passcode = req.query.passcode;
+  let passcode = req.query.passcode;
   if (!passcode || passcode == '') {
     // res.json(allInstructions); // WARNING: INSECURE, DO NOT USE IN PRODUCTION
     passcode = '*';
