@@ -18,17 +18,28 @@ const RightPane: React.FC<RightPaneProps> = (props) => {
 
     // Update instructions state when props.instructions changes
     useEffect(() => {
-        axios.get('https://cs1332-exam-timer-407797320918.us-east1.run.app/messages')
-        .then(response => {
-            const instructions = response.data;
-            setBeforeInstructions(instructions.before);
-            setDuringInstructions(instructions.before);
-            setAfterInstructions(instructions.after);
-            setDisplayedInstructions(props.examActive ? instructions.during : props.examEnded ? instructions.after : instructions.before);
-        })
-        .catch(error => {
-          console.error('There was an error fetching the data!', error);
-        });
+        const fetchInstructions = () => {
+            axios.get('https://cs1332-exam-timer-407797320918.us-east1.run.app/messages')
+                .then(response => {
+                    const instructions = response.data;
+                    setBeforeInstructions(instructions.before);
+                    setDuringInstructions(instructions.during);
+                    setAfterInstructions(instructions.after);
+                    setDisplayedInstructions(props.examActive ? instructions.during : props.examEnded ? instructions.after : instructions.before);
+                })
+                .catch(error => {
+                    console.error('There was an error fetching the data!', error);
+                });
+        };
+
+        // Fetch instructions immediately
+        fetchInstructions();
+
+        // Set up interval to fetch instructions every 30 seconds
+        const intervalId = setInterval(fetchInstructions, 30000);
+
+        // Clear interval on component unmount
+        return () => clearInterval(intervalId);
     }, [props.examActive, props.examEnded, beforeInstructions, duringInstructions, afterInstructions]);
 
     // Settings modal

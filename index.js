@@ -28,15 +28,15 @@ let instructions = {
 
 // GET endpoint to retrieve the messages
 app.get('/messages', (req, res) => {
-  console.log(instructions)
   res.json(instructions);
 });
 
 // POST endpoint to modify the messages
 app.post('/messages', (req, res) => {
-  const { before, during, after } = req.body;
-  instructions = { before, during, after };
-  res.json({ message: 'Instructions updated successfully' });
+  const { newBeforeInstructionsText, newDuringInstructionsText } = req.body;
+  if (newBeforeInstructionsText !== undefined) instructions.before = newBeforeInstructionsText;
+  if (newDuringInstructionsText !== undefined) instructions.during = newDuringInstructionsText;
+  res.json(instructions);
 });
 
 // The "catchall" handler: for any request that doesn't match one above, send back React's index.html file.
