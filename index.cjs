@@ -3,10 +3,11 @@ const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
 const app = express();
-const port = 3000;
+const port = 8080;
 
 app.use(cors());
 app.use(express.json());
+app.use(express.static('vue-app/dist'))
 
 // Initialize two string messages
 const configPath = path.join(__dirname, './config.json');

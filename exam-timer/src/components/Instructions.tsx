@@ -48,7 +48,7 @@ const Instructions: React.FC<InstructionsProps> = (props) => {
         setSyncInProgress(true);
 
         // Send the updated instructions to the backend
-        axios.post('https://35.193.81.249:3000/messages', {
+        axios.post('http://localhost:8080/messages', {
             newBeforeInstructionsText: props.examActive ? undefined : instructions,
             newDuringInstructionsText: props.examActive ? instructions : undefined
         })

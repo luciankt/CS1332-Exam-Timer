@@ -18,7 +18,7 @@ const RightPane: React.FC<RightPaneProps> = (props) => {
 
     // Update instructions state when props.instructions changes
     useEffect(() => {
-        axios.get('https://35.193.81.249:3000/messages')
+        axios.get('http://localhost:8080/messages')
         .then(response => {
             const instructions = response.data;
             setBeforeInstructions(instructions.before);
