@@ -1,0 +1,69 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    text-align: center;
+}
+
+.passcode-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 30%;
+    margin: 0 auto;
+    margin-bottom: 5%;
+}
+
+.passcode-form label {
+    margin-bottom: 10px;
+    font-size: 18px;
+    color: #333;
+    text-align: center;
+    font-weight: bold;
+}
+
+.passcode-form input {
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+    font-size: 16px;
+    text-align: center;
+}
+
+.passcode-form button {
+    padding: 10px 20px;
+    width: 50%;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.passcode-form button:hover {
+    background-color: #0056b3;
+}
+
+p {
+    margin-bottom: -10px;
+    text-align: center;
+    width: 100%;
+    display: block;
+    color: gray;
+}
+
+.error {
+    color: red;
+}
