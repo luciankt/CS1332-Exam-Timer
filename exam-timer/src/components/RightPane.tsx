@@ -3,6 +3,7 @@ import './css/RightPane.css';
 import Instructions from './Instructions';
 import InstructionsModal from './InstructionsModal';
 import axios from 'axios';
+import config from '../config.json';
 
 interface RightPaneProps {
     examActive: boolean;
@@ -20,8 +21,9 @@ const RightPane: React.FC<RightPaneProps> = (props) => {
 
     // Update instructions state when props.instructions changes or fetched
     useEffect(() => {
+        // console.log('Fetching instructions for passcode', props.passcode);
         const fetchInstructions = (force: boolean) => {
-            axios.get(`${props.ip}/messages`, {
+            axios.get(`${config.ip}/messages`, {
                 params: {
                     passcode: props.passcode
                 }
@@ -91,7 +93,7 @@ const RightPane: React.FC<RightPaneProps> = (props) => {
         setDuringInstructions(newDuringText);
 
         // Send the updated instructions to the backend
-        axios.post(`${props.ip}/messages`, {
+        axios.post(`${config.ip}/messages`, {
             passcode: props.passcode,
             newBeforeInstructionsText: newBeforeText,
             newDuringInstructionsText: newDuringText
@@ -120,7 +122,7 @@ const RightPane: React.FC<RightPaneProps> = (props) => {
                 <i className="fa-solid fa-pencil"></i>
             </div>
             <h1>Instructions and Clarifications</h1>
-            <Instructions instructions={displayedInstructions} onInstructionsChange={setNewInstructionsFromDisplay} examActive={props.examActive} passcode={props.passcode} ip={props.ip} />
+            <Instructions instructions={displayedInstructions} onInstructionsChange={setNewInstructionsFromDisplay} examActive={props.examActive} passcode={props.passcode} ip={config.ip} />
         </div>
     );
 };

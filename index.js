@@ -27,8 +27,8 @@ app.get('/messages', (req, res) => {
   if (!passcode || passcode == '' || passcode == '*') {
     res.status(400).json({ error: 'Invalid sync code.' });
   }
-  else if (passcode == '$DEBUG') { // Insecure, comment out for production
-    res.json(allInstructions);
+  else if (passcode == '$DEBUG') {
+    // res.json(allInstructions);  // Insecure, comment out for production
   }
   else if (!allInstructions[passcode]) {
     allInstructions[passcode] = {
@@ -37,6 +37,8 @@ app.get('/messages', (req, res) => {
       after: allInstructions['*'].after,
       lastChange: new Date().getTime()
     }
+    res.json(allInstructions[passcode]);
+  } else {
     res.json(allInstructions[passcode]);
   }
 });
