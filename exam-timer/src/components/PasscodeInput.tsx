@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import './css/PasscodeInput.css';
+import axios from 'axios';
+import config from '../config.json';
 
 interface PasscodeInputProps {
     onPasscodeSubmit: (passcode: string) => void;
@@ -7,17 +9,32 @@ interface PasscodeInputProps {
 
 const PasscodeInput: React.FC<PasscodeInputProps> = ({ onPasscodeSubmit }) => {
     const [passcode, setPasscode] = useState('');
+    const [currPasscodeConfirm, setCurrPasscodeConfirm] = useState('');
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setPasscode(event.target.value);
     };
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        const feedback = document.getElementById('feedback') as HTMLParagraphElement;
         event.preventDefault();
-        if (passcode.length > 0) {
-            onPasscodeSubmit(passcode);
+        if (passcode.length > 0 && passcode !== '*') {
+            axios.get(`${config.ip}/passcode_exists`, {
+                params: {
+                    passcode: passcode
+                }
+            })
+            .then(response => {
+                if (response.data.exists || currPasscodeConfirm === passcode) {
+                    onPasscodeSubmit(passcode);
+                } else {
+                    feedback.innerText = 'This code has not been used before. Submit to confirm.';
+                    setCurrPasscodeConfirm(passcode);
+                }
+            }).catch(error => {
+                console.error('There was an error!', error);
+            });
         } else {
-            const feedback = document.getElementById('feedback') as HTMLParagraphElement;
             feedback.innerText = 'Please enter a sync code.';
         }
     };
