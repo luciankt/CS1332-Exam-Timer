@@ -1,5 +1,5 @@
 {
-    "ip": "https://cs1332-exam-timer-407797320918.us-east1.run.app",
+    "ip": "https://exam-timer.azurewebsites.net",
     "port": 8080,
     "allInstructions": {
         "*": {
@@ -8,9 +8,9 @@
             "after": "STAY SEATED UNTIL DISMISSED."
         },
         "cs1332": {
-            "before": "DO NOT OPEN THE EXAM YET.\n\nSCAN YOUR BUZZCARD, OR ELSE YOU MAY RECEIVE A ZERO.\n\nRAISE YOUR HAND TO BE ESCORTED TO THE RESTROOM.",
-            "during": "RAISE YOUR HAND TO BE ESCORTED TO THE RESTROOM.",
-            "after": "STAY SEATED UNTIL YOUR EXAM IS COLLECTED.\n\nDO NOT DISCUSS THE EXAM TODAY.\nIT IS AN HONOR CODE VIOLATION."
+            "before": "Do not open the exam yet.\n\nSCAN YOUR BUZZCARD, or else you may receive a zero.\n\nRaise your hand to be escorted to the restroom.",
+            "during": "Raise your hand to be escorted to the restroom.",
+            "after": "Stay seated until your exam is collected.\n\nDO NOT DISCUSS THE EXAM TODAY.\nIt is an honor code violation."
         }
     }
 }

@@ -24,23 +24,45 @@ app.use(express.static(path.join(__dirname, 'exam-timer/dist')));
 // GET endpoint to retrieve the messages
 app.get('/messages', (req, res) => {
   let passcode = req.query.passcode;
-  if (!passcode || passcode == '') {
-    // res.json(allInstructions); // WARNING: INSECURE, DO NOT USE IN PRODUCTION
-    passcode = '*';
+  if (!passcode || passcode == '' || passcode == '*') {
+    res.status(400).json({ error: 'Invalid sync code.' });
+  }
+  else if (passcode == '$DEBUG') { // Insecure, comment out for production
+    res.json(allInstructions);
   }
   else if (!allInstructions[passcode]) {
-    allInstructions[passcode] = allInstructions['*'];
-    allInstructions[passcode].lastChange = new Date().getTime();
+    allInstructions[passcode] = {
+      before: allInstructions['*'].before,
+      during: allInstructions['*'].during,
+      after: allInstructions['*'].after,
+      lastChange: new Date().getTime()
+    }
+    res.json(allInstructions[passcode]);
   }
-  res.json(allInstructions[passcode]);
+});
+
+// GET endpoint to see if sync code exists
+app.get('/passcode_exists', (req, res) => {
+  let passcode = req.query.passcode;
+  res.json({ exists: !!allInstructions[passcode] });
 });
 
 // POST endpoint to modify the messages
 app.post('/messages', (req, res) => {
   const { passcode, newBeforeInstructionsText, newDuringInstructionsText } = req.body;
+
+  if (!passcode || passcode == '' || passcode == '*') {
+    res.status(400).json({ error: 'Invalid sync code.' });
+    return;
+  }
+
   if (!allInstructions[passcode]) {
-    allInstructions[passcode] = allInstructions['*'];
-    allInstructions[passcode].lastChange = new Date().getTime();
+    allInstructions[passcode] = {
+      before: allInstructions['*'].before,
+      during: allInstructions['*'].during,
+      after: allInstructions['*'].after,
+      lastChange: new Date().getTime()
+    }
   }
   
   let instructions = allInstructions[passcode];
