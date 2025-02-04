@@ -37,7 +37,7 @@ const LeftPane: React.FC<LeftPaneProps> = (props) => {
     }
 
     // Variables
-    const defaultDuration = 3000; // Default duration of the timer in seconds
+    const defaultDuration = 3600; // Default duration of the timer in seconds, typically 50-60 min
     const [startTime, setStartTime] = useState<Date>(calculateNextHalfHour(0)); // The start time
     const [endTime, setEndTime] = useState<Date>(calculateNextHalfHour(defaultDuration)); // The end time
     const [duration, setDuration] = useState<number>(defaultDuration); // The total time from startTime to endTime
